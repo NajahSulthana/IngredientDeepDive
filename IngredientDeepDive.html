@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingredient Deep Dive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Open+Sans&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+    }
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif;
+    }
+    .ingredient-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .ingredient-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    }
+    [data-aos] {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    [data-aos].aos-animate {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('aos-animate');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('[data-aos]').forEach(el => observer.observe(el));
+
+      const searchInput = document.getElementById('search');
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        const cards = document.querySelectorAll('.ingredient-card');
+        cards.forEach(card => {
+          const name = card.getAttribute('data-name').toLowerCase();
+          card.style.display = name.includes(query) ? 'flex' : 'none';
+        });
+      });
+    });
+  </script>
+</head>
+<body class="bg-gradient-to-br from-[#fdf6f0] to-[#fae6df] text-[#4b3832]">
+  <nav class="bg-[#d2b48c] py-4 shadow-md">
+    <div class="max-w-6xl mx-auto px-6 flex justify-end space-x-6">
+      <a href="IngredientDeepDive.html" class="text-white font-medium hover:underline">Home</a>
+      <a href="#contact" class="text-white font-medium hover:underline">Contact</a>
+    </div>
+  </nav>
+
+  <section class="bg-[#d2b48c] py-16 shadow-md text-center">
+    <div class="max-w-6xl mx-auto px-6">
+      <h1 class="text-5xl md:text-6xl font-bold text-white drop-shadow-sm">Ingredient Deep Dive</h1>
+      <p class="mt-4 text-xl text-[#fdfcfb]">Explore the science, history, and role of every baking ingredient</p>
+    </div>
+    <div class="absolute top-0 left-0 w-32 h-32 bg-[#c1a77e] rounded-full opacity-30 blur-xl -z-10"></div>
+    <div class="absolute bottom-0 right-0 w-32 h-32 bg-[#b2967d] rounded-full opacity-30 blur-xl -z-10"></div>
+  </section>
+
+  <div class="max-w-2xl mx-auto px-6 mt-10">
+    <input id="search" type="text" placeholder="Search ingredients..." class="w-full p-3 rounded-lg border border-[#d2b48c] focus:outline-none focus:ring-2 focus:ring-[#c19a6b]" />
+  </div>
+
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-6 space-y-14">
+      <!-- Ingredient Cards -->
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6" data-aos data-name="Baking Soda">
+        <img src="https://hicaps.com.ph/wp-content/uploads/2022/11/baking-soda-e1668497204903.jpg" class="w-32 h-auto rounded-lg" alt="Baking Soda" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Baking Soda</h2>
+          <p class="mb-2">Baking soda (sodium bicarbonate) is a powerful leavening agent that produces carbon dioxide bubbles when combined with an acid.</p>
+          <p class="mb-2">Tip: Use with acidic ingredients like buttermilk or vinegar.</p>
+          <p class="text-sm text-gray-500">Function: Leavening | Substitutes: Baking powder + vinegar | Common in: Cookies, quick breads</p>
+        </div>
+      </div>
+
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6" data-aos data-name="Butter">
+        <img src="https://pastryteamusa.com/wp-content/uploads/2024/07/butter2-1024x668.jpg" class="w-32 h-auto rounded-lg" alt="Butter" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Butter</h2>
+          <p class="mb-2">Adds richness and tenderness to baked goods, contributing to leavening when creamed with sugar.</p>
+          <p class="mb-2">Tip: Keep butter cold for flaky pastries.</p>
+          <p class="text-sm text-gray-500">Function: Fat, Flavor | Types: Salted, Unsalted | Common in: Cookies, cakes</p>
+        </div>
+      </div>
+
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6" data-aos data-name="Eggs">
+        <img src="https://freedomvalleyfarmmd.com/wp-content/uploads/2018/12/Eggs-in-burlap-basket.jpg" class="w-32 h-auto rounded-lg" alt="Eggs" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Eggs</h2>
+          <p class="mb-2">Provide structure, richness, and moisture, helping bind ingredients together.</p>
+          <p class="mb-2">Tip: Use room temperature eggs for better mixing.</p>
+          <p class="text-sm text-gray-500">Function: Binding, Moisture | Substitutes: Applesauce, flax eggs | Common in: Cakes, muffins</p>
+        </div>
+      </div>
+
+      <!-- Hidden Ingredients for Search -->
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Oil">
+        <img src="https://bakinghow.com/wp-content/uploads/what-is-the-best-oil-for-baking-cakes-5.jpg" class="w-32 h-auto rounded-lg" alt="Oil" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Oil</h2>
+          <p class="mb-2">Keeps baked goods moist and tender, affecting the final texture.</p>
+          <p class="mb-2">Tip: Use neutral oils for cakes and quick breads.</p>
+          <p class="text-sm text-gray-500">Function: Moisture, Fat | Types: Vegetable, Canola | Common in: Brownies, muffins</p>
+        </div>
+      </div>
+
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Vanilla Extract">
+        <img src="https://www.allrecipes.com/thmb/B9YisuxO7PIhhFCxLXZKVB-6ho4=/750x0/filters:no_upscale():max_bytes(150000):strip_icc()/Vanilla-Paste-vs-Vanilla-Extract-4x3-9568aeb9bcab4786a00d04701eb482e8.jpg" class="w-32 h-auto rounded-lg" alt="Vanilla Extract" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Vanilla Extract</h2>
+          <p class="mb-2">Enhances flavor and aroma in baked goods.</p>
+          <p class="mb-2">Tip: Use pure vanilla extract for the best flavor.</p>
+          <p class="text-sm text-gray-500">Function: Flavoring | Common in: Cakes, cookies</p>
+        </div>
+      </div>
+
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Cocoa Powder">
+        <img src="https://www.healthifyme.com/blog/wp-content/uploads/2022/01/Cocoa-Powder-1.jpg" class="w-32 h-auto rounded-lg" alt="Cocoa Powder" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Cocoa Powder</h2>
+          <p class="mb-2">Adds rich chocolate flavor and color to baked goods.</p>
+          <p class="mb-2">Tip: Use unsweetened cocoa powder for baking.</p>
+          <p class="text-sm text-gray-500">Function: Flavor, Color | Common in: Brownies, cakes</p>
+        </div>
+      </div>
+
+      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Milk">
+        <img src="https://jbsite-11e9c.kxcdn.com/Ayurveda/images/content/24-Milk.jpg" class="w-32 h-auto rounded-lg" alt="Milk" />
+        <div>
+          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Milk</h2>
+          <p class="mb-2">Adds moisture and richness, helping activate leavening agents.</p>
+          <p class="mb-2">Tip: Use whole milk for richer flavor.</p>
+          <p class="text-sm text-gray-500">Function: Moisture, Flavor | Common in: Cakes, breads</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 bg-[#fdf9f5]">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-semibold text-[#8b5e3c] mb-4">About Us</h2>
+      <p class="text-lg text-[#4b3832]">Ingredient Deep Dive helps home bakers understand the science behind everyday baking ingredients.</p>
+    </div>
+  </section>
+
+  <footer class="bg-[#d2b48c] text-center py-6 text-sm text-white">
+    <p>&copy; 2025 Ingredient Deep Dive | Created by Najah Sulthana</p>
+  </footer>
+</body>
+</html>
