@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingredient Deep Dive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Open+Sans&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-[#fdf6f0] to-[#fae6df] text-[#4b3832]">
+  <nav class="bg-[#d2b48c] py-4 shadow-md">
+    <div class="max-w-6xl mx-auto px-6 flex justify-end space-x-6">
+      <a href="IngredientDeepDive.html" class="text-white font-medium hover:underline">Home</a>
+      <a href="#contact" class="text-white font-medium hover:underline">Contact</a>
+    </div>
+  </nav>
+
+  <section class="bg-[#d2b48c] py-16 shadow-md text-center">
+    <div class="max-w-6xl mx-auto px-6">
+      <h1 class="text-5xl md:text-6xl font-bold text-white drop-shadow-sm">Ingredient Deep Dive</h1>
+      <p class="mt-4 text-xl text-[#fdfcfb]">Explore the science, history, and role of every baking ingredient</p>
+    </div>
+    <div class="absolute top-0 left-0 w-32 h-32 bg-[#c1a77e] rounded-full opacity-30 blur-xl -z-10"></div>
+    <div class="absolute bottom-0 right-0 w-32 h-32 bg-[#b2967d] rounded-full opacity-30 blur-xl -z-10"></div>
+  </section>
+
+  <div class="max-w-2xl mx-auto px-6 mt-10">
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search ingredients..." aria-label="Search ingredients" class="flex-1 p-3 rounded-lg border border-[#d2b48c] focus:outline-none focus:ring-2 focus:ring-[#c19a6b]" />
+      <select id="sortBy" class="select" aria-label="Sort ingredients">
+        <option value="name-asc">Name ↑</option>
+        <option value="name-desc">Name ↓</option>
+        <option value="function-asc">Function ↑</option>
+        <option value="function-desc">Function ↓</option>
+      </select>
+      <button id="showFavs" class="btn" aria-pressed="false">Bookmarks</button>
+    </div>
+  </div>
+
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-6 space-y-14">
+      <!-- Cards will be rendered here by JS -->
+      <div id="cards" class="card-grid" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="py-12 bg-[#fdf9f5]">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-semibold text-[#8b5e3c] mb-4">About Us</h2>
+      <p class="text-lg text-[#4b3832]">Ingredient Deep Dive helps home bakers understand the science behind everyday baking ingredients.</p>
+    </div>
+  </section>
+
+  <footer class="bg-[#d2b48c] text-center py-6 text-sm text-white">
+    <p>&copy; 2025 Ingredient Deep Dive | Created by Najah Sulthana</p>
+  </footer>
+
+  <!-- modal structure -->
+  <div id="modalBackdrop" class="modal-backdrop hidden" aria-hidden="true">
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button id="modalClose" aria-label="Close details" class="small-btn">✕</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <button id="backTop" aria-label="Back to top">↑</button>
+
+  <div class="toast-wrap" id="toasts" aria-live="polite" aria-atomic="true"></div>
+  <canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <button id="feedbackBtn" class="feedback-btn" aria-haspopup="dialog" aria-controls="feedbackModal">Feedback</button>
+  <div id="feedbackModal" class="feedback-modal hidden" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+    <div class="feedback-panel">
+      <h3 id="feedbackTitle">Page feedback</h3>
+      <p class="small">Help us improve — your feedback is private and stored locally.</p>
+      <div style="margin-top:10px">
+        <label for="fbName">Name (optional)</label>
+        <input id="fbName" class="feedback-input" placeholder="Your name">
+      </div>
+      <div style="margin-top:10px">
+        <label for="fbText">Comments</label>
+        <textarea id="fbText" class="feedback-text" placeholder="What did you like or what can be improved?"></textarea>
+      </div>
+      <div class="feedback-actions">
+        <div class="rating" aria-hidden="true">
+          <button type="button" data-rate="1">😕</button>
+          <button type="button" data-rate="2">😐</button>
+          <button type="button" data-rate="3">🙂</button>
+          <button type="button" data-rate="4">😊</button>
+          <button type="button" data-rate="5">🤩</button>
+        </div>
+        <div>
+          <button id="fbCancel" class="small-btn">Cancel</button>
+          <button id="fbSubmit" class="btn">Send</button>
+        </div>
+      </div>
+      <div id="fbSaved" class="feedback-success hidden">Thanks — feedback saved locally.</div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded ingredient data (small in-page API)
+    const _INGREDIENTS = [
+      {"name":"Baking Soda","function":"Leavening","image":"https://hicaps.com.ph/wp-content/uploads/2022/11/baking-soda-e1668497204903.jpg","description":"Baking soda (sodium bicarbonate) is a powerful leavening agent that produces carbon dioxide bubbles when combined with an acid.","tips":"Use with acidic ingredients like buttermilk or vinegar.","meta":"Function: Leavening | Substitutes: Baking powder + vinegar | Common in: Cookies, quick breads"},
+      {"name":"Butter","function":"Fat","image":"https://pastryteamusa.com/wp-content/uploads/2024/07/butter2-1024x668.jpg","description":"Adds richness and tenderness to baked goods, contributing to leavening when creamed with sugar.","tips":"Keep butter cold for flaky pastries.","meta":"Function: Fat, Flavor | Types: Salted, Unsalted | Common in: Cookies, cakes"},
+      {"name":"Eggs","function":"Binding","image":"https://freedomvalleyfarmmd.com/wp-content/uploads/2018/12/Eggs-in-burlap-basket.jpg","description":"Provide structure, richness, and moisture, helping bind ingredients together.","tips":"Use room temperature eggs for better mixing.","meta":"Function: Binding, Moisture | Substitutes: Applesauce, flax eggs | Common in: Cakes, muffins"},
+      {"name":"Oil","function":"Moisture","image":"https://bakinghow.com/wp-content/uploads/what-is-the-best-oil-for-baking-cakes-5.jpg","description":"Keeps baked goods moist and tender, affecting the final texture.","tips":"Use neutral oils for cakes and quick breads.","meta":"Function: Moisture, Fat | Types: Vegetable, Canola | Common in: Brownies, muffins"},
+      {"name":"Vanilla Extract","function":"Flavoring","image":"https://www.allrecipes.com/thmb/B9YisuxO7PIhhFCxLXZKVB-6ho4=/750x0/filters:no_upscale():max_bytes(150000):strip_icc()/Vanilla-Paste-vs-Vanilla-Extract-4x3-9568aeb9bcab4786a00d04701eb482e8.jpg","description":"Enhances flavor and aroma in baked goods.","tips":"Use pure vanilla extract for the best flavor.","meta":"Function: Flavoring | Common in: Cakes, cookies"},
+      {"name":"Cocoa Powder","function":"Flavoring","image":"https://www.healthifyme.com/blog/wp-content/uploads/2022/01/Cocoa-Powder-1.jpg","description":"Adds rich chocolate flavor and color to baked goods.","tips":"Use unsweetened cocoa powder for baking.","meta":"Function: Flavor, Color | Common in: Brownies, cakes"},
+      {"name":"Milk","function":"Moisture","image":"https://jbsite-11e9c.kxcdn.com/Ayurveda/images/content/24-Milk.jpg","description":"Adds moisture and richness, helping activate leavening agents.","tips":"Use whole milk for richer flavor.","meta":"Function: Moisture, Flavor | Common in: Cakes, breads"}
+    ];
+
+    // small API that mimics fetch
+    function fetchIngredients(){ return new Promise(resolve => { setTimeout(() => resolve(_INGREDIENTS.slice()), 220); }); }
+
+    // helpers
+    const LS_SORT = 'idd_sort_v1';
+    const LS_FAVS = 'idd_favs_v1';
+    function loadFavs(){ try{ return JSON.parse(localStorage.getItem(LS_FAVS))||[] }catch(e){return[]} }
+    function saveFavs(f){ try{ localStorage.setItem(LS_FAVS, JSON.stringify(f)) }catch(e){}
+    }
+
+    function loadSort(){ return localStorage.getItem(LS_SORT) || 'name-asc' }
+    function saveSort(v){ localStorage.setItem(LS_SORT, v) }
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const search = document.getElementById('search');
+      const sortBy = document.getElementById('sortBy');
+      const cards = document.getElementById('cards');
+      const showFavs = document.getElementById('showFavs');
+      const backTop = document.getElementById('backTop');
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const modal = document.getElementById('modal');
+      const modalBody = document.getElementById('modalBody');
+      const modalClose = document.getElementById('modalClose');
+
+      let data = await fetchIngredients();
+      let favs = loadFavs();
+      let sortValue = loadSort(); sortBy.value = sortValue;
+
+      // render
+      function renderList(items){ cards.innerHTML = ''; items.forEach(item=>{
+        const article = document.createElement('article');
+        article.className = 'bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex flex-col md:flex-row items-start gap-6';
+        article.setAttribute('data-aos','');
+        article.dataset.name = item.name;
+        article.dataset.function = item.function;
+        article.tabIndex = 0;
+
+        article.innerHTML = `
+          <img loading="lazy" src="${item.image}" class="w-full md:w-32 h-auto rounded-lg object-cover" alt="${item.name}" />
+          <div class="flex-1">
+            <div class="flex justify-between items-start">
+              <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">${item.name}</h2>
+              <div class="flex items-center gap-2">
+                <button class="fav" aria-label="bookmark ${item.name}" data-name="${item.name}">${favs.includes(item.name)?'★':'☆'}</button>
+                <button class="small-btn" data-action="details" aria-label="View details for ${item.name}">Details</button>
+              </div>
+            </div>
+            <p class="mb-2">${item.description}</p>
+            <p class="mb-2">Tip: ${item.tips}</p>
+            <p class="text-sm text-gray-500">${item.meta}</p>
+          </div>
+        `;
+
+        // attach events
+        article.querySelector('[data-action="details"]').addEventListener('click', ()=>openModal(item));
+        article.querySelector('.fav').addEventListener('click', (e)=>{
+          e.stopPropagation(); const n = item.name; const was = favs.includes(n);
+          if(was){ favs = favs.filter(x=>x!==n); showToast(n + ' removed', 'error', {undo: ()=>{ favs.push(n); saveFavs(favs); updateFavs(); }}); }
+          else { favs.push(n); showToast(n + ' added to bookmarks', 'success', {undo: ()=>{ favs = favs.filter(x=>x!==n); saveFavs(favs); updateFavs(); }}); burstConfetti(e.clientX, e.clientY); const star = e.currentTarget; star.classList.add('bounce'); setTimeout(()=>star.classList.remove('bounce'), 700); }
+          saveFavs(favs); updateFavs();
+        });
+
+        // tilt interaction
+        article.classList.add('card-tilt');
+        article.addEventListener('pointermove', (ev)=>{
+          const r = article.getBoundingClientRect(); const dx = ev.clientX - (r.left + r.width/2); const dy = ev.clientY - (r.top + r.height/2);
+          const tiltX = (dy / r.height) * -6; const tiltY = (dx / r.width) * 6; article.style.transform = `perspective(700px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+        });
+        article.addEventListener('pointerleave', ()=>{ article.style.transform=''; });
+        article.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openModal(item); });
+
+        cards.appendChild(article);
+      });
+
+      // re-init observers
+      const observer = new IntersectionObserver(entries=>{ entries.forEach(ent=>{ if(ent.isIntersecting) ent.target.classList.add('aos-animate'); }); }, {threshold:0.12});
+      cards.querySelectorAll('[data-aos]').forEach(el=>observer.observe(el));
+      }
+
+      function updateFavs(){ document.querySelectorAll('.fav').forEach(btn=>{ btn.textContent = favs.includes(btn.dataset.name)?'★':'☆'; }); }
+
+      // toast helper
+      const toastWrap = document.getElementById('toasts');
+      function showToast(message, type='', opts={undo:null}){
+        const t = document.createElement('div'); t.className = 'toast '+(type?type:'');
+        t.textContent = message;
+        if(opts.undo){ const u = document.createElement('button'); u.className='undo'; u.textContent='Undo'; u.addEventListener('click', ()=>{ opts.undo(); t.remove(); }); t.appendChild(u); }
+        toastWrap.prepend(t);
+        requestAnimationFrame(()=>t.classList.add('show'));
+        setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),250); }, 3200);
+      }
+
+      // small confetti effect (very simple)
+      const confettiCanvas = document.getElementById('confetti');
+      const confettiCtx = confettiCanvas.getContext && confettiCanvas.getContext('2d');
+      function resizeCanvas(){ confettiCanvas.width = innerWidth; confettiCanvas.height = innerHeight; }
+      if(confettiCtx){ resizeCanvas(); addEventListener('resize', resizeCanvas); }
+      function burstConfetti(x, y, count=18){ if(!confettiCtx) return; const pieces = []; for(let i=0;i<count;i++){ pieces.push({x,y,vx:(Math.random()-0.5)*6,vy:(Math.random()*-6)-2, color:`hsl(${Math.random()*60+20},80%,60%)`,r:Math.random()*5+3}); }
+        let lifetime=0; const anim = setInterval(()=>{
+          confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+          pieces.forEach(p=>{ p.x += p.vx; p.y += p.vy; p.vy += 0.25; p.vx *= 0.99; p.r *= 0.998; confettiCtx.fillStyle = p.color; confettiCtx.beginPath(); confettiCtx.arc(p.x,p.y,p.r,0,Math.PI*2); confettiCtx.fill(); });
+          lifetime++; if(lifetime>60){ clearInterval(anim); confettiCtx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); }
+        }, 16);
+      }
+
+      function applySort(list, key){ const [k,dir] = key.split('-'); return list.slice().sort((a,b)=>{ const A=(a[k]||'').toLowerCase(); const B=(b[k]||'').toLowerCase(); if(A<B) return dir==='asc'?-1:1; if(A>B) return dir==='asc'?1:-1; return 0; }); }
+
+      // Filter + sort + show
+      function filterAndRender(){ const q = search.value.trim().toLowerCase(); const onlyFavs = showFavs.getAttribute('aria-pressed')==='true'; let list = data.filter(it=>{ const txt = (it.name+' '+it.description+' '+it.meta).toLowerCase(); if(q && !txt.includes(q)) return false; if(onlyFavs && !favs.includes(it.name)) return false; return true; }); list = applySort(list, sortBy.value); renderList(list); updateFavs(); }
+
+      // debounce
+      let t; function debounce(fn,ms=160){ return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
+      const debounced = debounce(filterAndRender);
+
+      search.addEventListener('input', debounced);
+  sortBy.addEventListener('change', ()=>{ saveSort(sortBy.value); filterAndRender(); showToast('Sorted: ' + sortBy.options[sortBy.selectedIndex].text); });
+      showFavs.addEventListener('click', ()=>{ const pressed = showFavs.getAttribute('aria-pressed')==='true'; showFavs.setAttribute('aria-pressed', String(!pressed)); filterAndRender(); });
+
+      // modal
+      function openModal(item){ modalBackdrop.classList.remove('hidden'); modalBackdrop.style.display='flex'; modal.classList.add('show'); modalBackdrop.setAttribute('aria-hidden','false'); modalBody.innerHTML = `
+        <h2 id="modalTitle" class="text-2xl font-semibold text-[#8b5e3c]">${item.name}</h2>
+        <img loading="lazy" src="${item.image}" alt="${item.name}" class="w-full max-w-sm rounded-lg mt-3" />
+        <p class="mt-3">${item.description}</p>
+        <p class="mt-2"><strong>Tip:</strong> ${item.tips}</p>
+        <p class="mt-2 text-sm text-gray-500">${item.meta}</p>
+        <div class="mt-4 flex gap-3">
+          <button id="copyInfo" class="p-2 bg-[#d2b48c] text-white rounded">Copy info</button>
+          <button id="closeDetail" class="p-2 border rounded">Close</button>
+        </div>
+      `;
+        // focus trap basics
+        const focusable = modal.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])');
+        (focusable[0]||modal).focus();
+  document.getElementById('copyInfo').addEventListener('click', ()=>{ navigator.clipboard?.writeText(item.name+" - "+item.description).then(()=>showToast('Copied to clipboard','success')).catch(()=>showToast('Copy failed','error')); });
+        document.getElementById('closeDetail').addEventListener('click', closeModal);
+      }
+
+      function closeModal(){ modal.classList.remove('show'); modalBackdrop.classList.add('hidden'); modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); }
+      modalClose.addEventListener('click', closeModal);
+      modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) closeModal(); });
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+      // back to top
+      window.addEventListener('scroll', ()=>{ if(window.scrollY>300) backTop.style.display='block'; else backTop.style.display='none'; });
+      backTop.addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+      // initial render
+      filterAndRender();
+
+      // Feedback widget
+      const feedbackBtn = document.getElementById('feedbackBtn');
+      const feedbackModal = document.getElementById('feedbackModal');
+      const fbCancel = document.getElementById('fbCancel');
+      const fbSubmit = document.getElementById('fbSubmit');
+      const fbName = document.getElementById('fbName');
+      const fbText = document.getElementById('fbText');
+      const fbSaved = document.getElementById('fbSaved');
+      let rating = 0;
+
+      feedbackBtn.addEventListener('click', ()=>{ feedbackModal.classList.remove('hidden'); feedbackModal.style.display='flex'; fbName.focus(); });
+      fbCancel.addEventListener('click', ()=>{ feedbackModal.classList.add('hidden'); feedbackModal.style.display='none'; });
+      feedbackModal.addEventListener('click', (e)=>{ if(e.target===feedbackModal) { feedbackModal.classList.add('hidden'); feedbackModal.style.display='none'; } });
+      feedbackModal.querySelectorAll('.rating button').forEach(b=> b.addEventListener('click', ()=>{ rating = Number(b.dataset.rate); showToast('Rating: '+rating); }));
+
+      fbSubmit.addEventListener('click', ()=>{
+        const data = { name: fbName.value.trim(), text: fbText.value.trim(), rating, time: new Date().toISOString() };
+        if(!data.text){ showToast('Please enter feedback text','error'); fbText.focus(); return; }
+        try{ const store = JSON.parse(localStorage.getItem('idd_feedback')||'[]'); store.push(data); localStorage.setItem('idd_feedback', JSON.stringify(store)); fbSaved.classList.remove('hidden'); showToast('Feedback saved','success'); setTimeout(()=>{ fbSaved.classList.add('hidden'); feedbackModal.classList.add('hidden'); feedbackModal.style.display='none'; fbName.value=''; fbText.value=''; rating=0; },900); }catch(e){ showToast('Save failed','error'); }
+      });
+    });
+  </script>
+</body>
+</html>
