@@ -1,165 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <title>Login Page</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ingredient Deep Dive</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Open+Sans&display=swap" rel="stylesheet" />
   <style>
+    :root{ --bg:#fffaf0; --card:#f9f1e7; --accent:#d2a679; --dark:#8b5e3c; }
+    *{box-sizing:border-box}
     body {
-      font-family: 'Open Sans', sans-serif;
+      background-color: var(--bg);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 16px;
     }
-    h1, h2, h3 {
-      font-family: 'Playfair Display', serif;
+    .login-box {
+      background: var(--card);
+      padding: 22px;
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 6px 18px rgba(139,94,60,0.08);
     }
-    .ingredient-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    h1 {
+      text-align: center;
+      color: var(--dark);
+      margin: 0 0 14px 0;
+      font-size: 1.4rem;
     }
-    .ingredient-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    label{display:block;margin:8px 0 4px 0;font-size:0.95rem}
+    input[type="text"], input[type="password"], input[type="email"]{
+      width:100%;padding:8px;border:1px solid #cfcfcf;border-radius:6px;font-size:0.95rem
     }
-    [data-aos] {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: opacity 1s ease, transform 1s ease;
+    .row{display:flex;gap:8px;align-items:center}
+    .buttons{display:flex;gap:8px;margin-top:12px}
+    button, input[type="submit"], input[type="reset"]{
+      background:var(--accent);color:#fff;border:none;padding:8px 10px;border-radius:6px;cursor:pointer;font-weight:600
     }
-    [data-aos].aos-animate {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    button.secondary{background:#fff;border:1px solid #dcdcdc;color:var(--dark)}
+    .small{font-size:0.85rem;color:#444;margin-top:8px}
+    .register-link{ text-align:center;margin-top:12px }
+    .register-link a{color:var(--dark);text-decoration:none;font-weight:600}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+    .remember{display:flex;align-items:center;gap:6px}
+    meter{width:100%;height:10px}
+    .error{color:#b33;margin-top:8px;font-size:0.9rem;display:none}
+    @media (max-width:420px){.login-box{padding:16px}}
   </style>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('aos-animate');
-          }
-        });
-      }, { threshold: 0.1 });
-
-      document.querySelectorAll('[data-aos]').forEach(el => observer.observe(el));
-
-      const searchInput = document.getElementById('search');
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.toLowerCase();
-        const cards = document.querySelectorAll('.ingredient-card');
-        cards.forEach(card => {
-          const name = card.getAttribute('data-name').toLowerCase();
-          card.style.display = name.includes(query) ? 'flex' : 'none';
-        });
-      });
-    });
-  </script>
 </head>
-<body class="bg-gradient-to-br from-[#fdf6f0] to-[#fae6df] text-[#4b3832]">
-  <nav class="bg-[#d2b48c] py-4 shadow-md">
-    <div class="max-w-6xl mx-auto px-6 flex justify-end space-x-6">
-      <a href="index.html" class="text-white font-medium hover:underline">Home</a>
-      <a href="#contact" class="text-white font-medium hover:underline">Contact</a>
-    </div>
-  </nav>
+<body>
+  <div class="login-box" role="main" aria-labelledby="loginHeading">
+    <form id="loginForm" action="IngredientDeepDive.html" method="get" novalidate>
+      <h1 id="loginHeading">Login</h1>
 
-  <section class="bg-[#d2b48c] py-16 shadow-md text-center">
-    <div class="max-w-6xl mx-auto px-6">
-      <h1 class="text-5xl md:text-6xl font-bold text-white drop-shadow-sm">Ingredient Deep Dive</h1>
-      <p class="mt-4 text-xl text-[#fdfcfb]">Explore the science, history, and role of every baking ingredient</p>
-    </div>
-    <div class="absolute top-0 left-0 w-32 h-32 bg-[#c1a77e] rounded-full opacity-30 blur-xl -z-10"></div>
-    <div class="absolute bottom-0 right-0 w-32 h-32 bg-[#b2967d] rounded-full opacity-30 blur-xl -z-10"></div>
-  </section>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" required autofocus>
 
-  <div class="max-w-2xl mx-auto px-6 mt-10">
-    <input id="search" type="text" placeholder="Search ingredients..." class="w-full p-3 rounded-lg border border-[#d2b48c] focus:outline-none focus:ring-2 focus:ring-[#c19a6b]" />
+      <label for="password">Password</label>
+      <div class="row">
+        <input type="password" id="password" name="password" autocomplete="current-password" required aria-describedby="pwHelp">
+        <button type="button" id="togglePw" class="secondary" aria-pressed="false" title="Show or hide password">Show</button>
+      </div>
+
+      <div id="pwHelp" class="small">Use at least 8 characters. Password strength:</div>
+      <meter id="pwStrength" min="0" max="4" low="1" high="3" optimum="4" value="0"></meter>
+
+      <div class="controls">
+        <label class="remember"><input type="checkbox" id="rememberMe"> Remember me</label>
+        <button type="button" id="resetBtn" class="secondary">Reset</button>
+      </div>
+
+      <div class="buttons">
+        <input type="submit" value="Login">
+      </div>
+
+      <div class="error" id="errorMsg" role="alert"></div>
+
+      <div class="register-link">
+        Don't have an account? <a href="IDD signin.html">Create one</a>
+      </div>
+    </form>
   </div>
 
-  <section class="py-16">
-    <div class="max-w-6xl mx-auto px-6 space-y-14">
-      <!-- Ingredient Cards -->
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6" data-aos data-name="Baking Soda">
-        <img src="https://hicaps.com.ph/wp-content/uploads/2022/11/baking-soda-e1668497204903.jpg" class="w-32 h-auto rounded-lg" alt="Baking Soda" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Baking Soda</h2>
-          <p class="mb-2">Baking soda (sodium bicarbonate) is a powerful leavening agent that produces carbon dioxide bubbles when combined with an acid.</p>
-          <p class="mb-2">Tip: Use with acidic ingredients like buttermilk or vinegar.</p>
-          <p class="text-sm text-gray-500">Function: Leavening | Substitutes: Baking powder + vinegar | Common in: Cookies, quick breads</p>
-        </div>
-      </div>
+  <script>
+    // Elements
+    const form = document.getElementById('loginForm');
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const togglePw = document.getElementById('togglePw');
+    const remember = document.getElementById('rememberMe');
+    const pwStrength = document.getElementById('pwStrength');
+    const errorMsg = document.getElementById('errorMsg');
+    const resetBtn = document.getElementById('resetBtn');
 
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6" data-aos data-name="Butter">
-        <img src="https://pastryteamusa.com/wp-content/uploads/2024/07/butter2-1024x668.jpg" class="w-32 h-auto rounded-lg" alt="Butter" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Butter</h2>
-          <p class="mb-2">Adds richness and tenderness to baked goods, contributing to leavening when creamed with sugar.</p>
-          <p class="mb-2">Tip: Keep butter cold for flaky pastries.</p>
-          <p class="text-sm text-gray-500">Function: Fat, Flavor | Types: Salted, Unsalted | Common in: Cookies, cakes</p>
-        </div>
-      </div>
+    // Load remembered username
+    try{
+      const saved = localStorage.getItem('idd_username');
+      if(saved){ username.value = saved; remember.checked = true; }
+    }catch(e){ /* localStorage may be disabled */ }
 
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6" data-aos data-name="Eggs">
-        <img src="https://freedomvalleyfarmmd.com/wp-content/uploads/2018/12/Eggs-in-burlap-basket.jpg" class="w-32 h-auto rounded-lg" alt="Eggs" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Eggs</h2>
-          <p class="mb-2">Provide structure, richness, and moisture, helping bind ingredients together.</p>
-          <p class="mb-2">Tip: Use room temperature eggs for better mixing.</p>
-          <p class="text-sm text-gray-500">Function: Binding, Moisture | Substitutes: Applesauce, flax eggs | Common in: Cakes, muffins</p>
-        </div>
-      </div>
+    // Password strength (simple heuristic)
+    function calcStrength(pw){
+      let score = 0;
+      if(!pw) return 0;
+      if(pw.length >= 8) score++;
+      if(/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+      if(/[0-9]/.test(pw)) score++;
+      if(/[^A-Za-z0-9]/.test(pw)) score++;
+      return score;
+    }
 
-      <!-- Hidden Ingredients for Search -->
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Oil">
-        <img src="https://bakinghow.com/wp-content/uploads/what-is-the-best-oil-for-baking-cakes-5.jpg" class="w-32 h-auto rounded-lg" alt="Oil" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Oil</h2>
-          <p class="mb-2">Keeps baked goods moist and tender, affecting the final texture.</p>
-          <p class="mb-2">Tip: Use neutral oils for cakes and quick breads.</p>
-          <p class="text-sm text-gray-500">Function: Moisture, Fat | Types: Vegetable, Canola | Common in: Brownies, muffins</p>
-        </div>
-      </div>
+    password.addEventListener('input', () => {
+      const s = calcStrength(password.value);
+      pwStrength.value = s;
+      // colour feedback via aria-label for screen readers
+      pwStrength.setAttribute('aria-label', 'Password strength ' + s + ' of 4');
+    });
 
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Vanilla Extract">
-        <img src="https://www.allrecipes.com/thmb/B9YisuxO7PIhhFCxLXZKVB-6ho4=/750x0/filters:no_upscale():max_bytes(150000):strip_icc()/Vanilla-Paste-vs-Vanilla-Extract-4x3-9568aeb9bcab4786a00d04701eb482e8.jpg" class="w-32 h-auto rounded-lg" alt="Vanilla Extract" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Vanilla Extract</h2>
-          <p class="mb-2">Enhances flavor and aroma in baked goods.</p>
-          <p class="mb-2">Tip: Use pure vanilla extract for the best flavor.</p>
-          <p class="text-sm text-gray-500">Function: Flavoring | Common in: Cakes, cookies</p>
-        </div>
-      </div>
+    // Toggle password visibility
+    togglePw.addEventListener('click', () => {
+      const isHidden = password.type === 'password';
+      password.type = isHidden ? 'text' : 'password';
+      togglePw.textContent = isHidden ? 'Hide' : 'Show';
+      togglePw.setAttribute('aria-pressed', String(isHidden));
+    });
 
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Cocoa Powder">
-        <img src="https://www.healthifyme.com/blog/wp-content/uploads/2022/01/Cocoa-Powder-1.jpg" class="w-32 h-auto rounded-lg" alt="Cocoa Powder" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Cocoa Powder</h2>
-          <p class="mb-2">Adds rich chocolate flavor and color to baked goods.</p>
-          <p class="mb-2">Tip: Use unsweetened cocoa powder for baking.</p>
-          <p class="text-sm text-gray-500">Function: Flavor, Color | Common in: Brownies, cakes</p>
-        </div>
-      </div>
+    // Reset button behaviour
+    resetBtn.addEventListener('click', () => {
+      form.reset();
+      pwStrength.value = 0;
+      errorMsg.style.display = 'none';
+      try{ localStorage.removeItem('idd_username'); }catch(e){}
+    });
 
-      <div class="bg-[#fdf9f5] p-6 rounded-xl ingredient-card flex items-start gap-6 hidden-by-default" style="display: none;" data-aos data-name="Milk">
-        <img src="https://jbsite-11e9c.kxcdn.com/Ayurveda/images/content/24-Milk.jpg" class="w-32 h-auto rounded-lg" alt="Milk" />
-        <div>
-          <h2 class="text-2xl font-semibold text-[#8b5e3c] mb-2">Milk</h2>
-          <p class="mb-2">Adds moisture and richness, helping activate leavening agents.</p>
-          <p class="mb-2">Tip: Use whole milk for richer flavor.</p>
-          <p class="text-sm text-gray-500">Function: Moisture, Flavor | Common in: Cakes, breads</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    // Form submit with client-side validation and simulated login
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+      const u = username.value.trim();
+      const p = password.value;
+      if(!u || !p){
+        showError('Please enter both username and password.');
+        return;
+      }
+      if(p.length < 6){
+        showError('Password must be at least 6 characters.');
+        return;
+      }
 
-  <section class="py-12 bg-[#fdf9f5]">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <h2 class="text-3xl font-semibold text-[#8b5e3c] mb-4">About Us</h2>
-      <p class="text-lg text-[#4b3832]">Ingredient Deep Dive helps home bakers understand the science behind everyday baking ingredients.</p>
-    </div>
-  </section>
+      // Remember username if requested
+      try{
+        if(remember.checked) localStorage.setItem('idd_username', u);
+        else localStorage.removeItem('idd_username');
+      }catch(e){ }
 
-  <footer class="bg-[#d2b48c] text-center py-6 text-sm text-white">
-    <p>&copy; 2025 Ingredient Deep Dive | Created by Najah Sulthana</p>
-  </footer>
+      // Visual success and then follow original action
+      // (simulate a login request)
+      showSuccess('Logging in…');
+      setTimeout(() => {
+        // proceed to target page (keeps original behavior)
+        window.location.href = form.action;
+      }, 900);
+    });
+
+    function showError(msg){
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      errorMsg.style.color = '#b33';
+    }
+
+    function showSuccess(msg){
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      errorMsg.style.color = 'green';
+    }
+  </script>
 </body>
 </html>
